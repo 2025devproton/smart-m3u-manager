@@ -1,5 +1,18 @@
 # Smart M3U Manager
 
+<div align="center">
+
+![License](https://img.shields.io/github/license/2025devproton/smart-m3u-manager?style=flat-square)
+![Last Commit](https://img.shields.io/github/last-commit/2025devproton/smart-m3u-manager?style=flat-square)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/2025devproton/smart-m3u-manager/docker-publish.yml?branch=main&label=Build%20%26%20Publish&style=flat-square)
+
+[![Docker Pulls](https://img.shields.io/docker/pulls/2025devproton/smart-m3u-manager.svg?style=flat-square)](https://hub.docker.com/r/2025devproton/smart-m3u-manager)
+[![Docker Image Size](https://img.shields.io/docker/image-size/2025devproton/smart-m3u-manager/latest.svg?style=flat-square)](https://hub.docker.com/r/2025devproton/smart-m3u-manager)
+![Issues](https://img.shields.io/github/issues/2025devproton/smart-m3u-manager?style=flat-square)
+![Pull Requests](https://img.shields.io/github/issues-pr/2025devproton/smart-m3u-manager?style=flat-square)
+
+</div>
+
 **Smart M3U Manager** is an intelligent web-based tool designed to streamline the management of M3U playlists for [Dispatcharr](https://github.com/m3u-man/dispatcharr). It simplifies the process of importing, analyzing, grouping, and synchronizing streams into Dispatcharr Channel Profiles.
 
 ## Features
