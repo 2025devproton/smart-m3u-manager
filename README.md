@@ -41,17 +41,36 @@
 
 ### Running with Docker (Recommended)
 
-1.  Clone the repository.
-2.  Use the included `docker-compose.yml` file.
+The easiest way to run Smart M3U Manager is using the pre-built Docker image from Docker Hub:
 
 ```bash
-# Start with default settings (Port 7000, connects to localhost:9191)
-docker compose up -d --build
+docker run -d \
+  --name smart-m3u-manager \
+  -p 7000:7000 \
+  -e DISPATCHARR_URL=http://host.docker.internal:9191 \
+  2025dev/smart-m3u-manager:latest
+```
+
+Or using Docker Compose:
+
+```yaml
+version: '3.8'
+
+services:
+  app:
+    container_name: smart-m3u-manager
+    image: 2025dev/smart-m3u-manager:latest
+    restart: unless-stopped
+    ports:
+      - "7000:7000"
+    environment:
+      - PORT=7000
+      - DISPATCHARR_URL=http://host.docker.internal:9191
 ```
 
 #### Configuration via Environment Variables
 
-You can configure the application using environment variables in your `docker-compose.yml` or CLI.
+You can configure the application using environment variables:
 
 | Variable | Description | Default |
 |:---|:---|:---|
@@ -60,7 +79,7 @@ You can configure the application using environment variables in your `docker-co
 | `DISPATCHARR_USER` | (Optional) Default username to pre-fill login. | - |
 | `DISPATCHARR_PASSWORD` | (Optional) Default password to pre-fill login. | - |
 
-**Example `docker-compose.yml`**:
+**Example with custom configuration**:
 
 ```yaml
 version: '3.8'
@@ -68,7 +87,7 @@ version: '3.8'
 services:
   app:
     container_name: smart-m3u-manager
-    build: .
+    image: 2025dev/smart-m3u-manager:latest
     restart: unless-stopped
     ports:
       - "8080:7000" # Maps host 8080 to container 7000
