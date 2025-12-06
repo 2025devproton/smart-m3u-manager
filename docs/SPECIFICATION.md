@@ -41,13 +41,27 @@ Given the requirement for ease of use into a rich web interface, we will use:
 - **Manual Merge/Split**: Drag-and-drop or checkbox selection to manually merge disparate groups that the AI missed.
 
 ### Phase 4: Execution
-- **Target Selection**: Choose a destination **Channel Group** in Dispatcharr (pick existing or create new).
-- **Batch Creation**:
-  1. Create `Channel` entity in Dispatcharr (`/api/channels/channels/`).
-  2. Create `Stream` entities linked to that Channel (`/api/channels/streams/`).
-  - *Note: Dispatcharr API structure implies Channel has `streams` array. We need to verify if we create Streams first and link them, or create Channel with stream links.*
+- **Target Selection**: Choose a destination **Channel Profile** in Dispatcharr (pick existing or create new).
+  - Channel Profiles allow different channel lineups for different devices/users.
+- **Batch Creation** (for each selected channel):
+  1. Create or find **Channel Group** based on M3U `group-title` (`/api/channels/groups/`).
+  2. Create **Stream** entities (`/api/channels/streams/`).
+  3. Create **Logo** if provided in M3U (`/api/channels/logos/`).
+  4. Create **Channel** with all metadata: name, tvg-id, logo, channel group, and streams (`/api/channels/channels/`).
+  5. Assign Channel to selected **Channel Profile** (`/api/channels/profiles/{id}/channels/{id}/`).
 
-## 4. detailed Data Flow
+## 4. API Documentation
+
+The complete Dispatcharr API specification is available in [dispatcharr_api.json](./dispatcharr_api.json). This Swagger/OpenAPI 2.0 document contains detailed information about all available endpoints, request/response schemas, and authentication requirements.
+
+Key endpoints used by this application:
+- `/api/m3u/accounts/` - M3U account management
+- `/api/channels/profiles/` - Channel profile management
+- `/api/channels/groups/` - Channel group management
+- `/api/channels/channels/` - Channel CRUD operations
+- `/api/channels/streams/` - Stream management
+
+## 5. detailed Data Flow
 
 ```mermaid
 sequenceDiagram
@@ -62,14 +76,18 @@ sequenceDiagram
     App->>App: Parse & Auto-Group Streams
     App-->>User: Display Review Dashboard
     User->>App: Adjust Groups / Confirm
-    loop For each Group
+    User->>App: Select Target Channel Profile
+    loop For each Channel
+        App->>DispatcharrAPI: POST /api/channels/groups/ (Create/Find Channel Group)
         App->>DispatcharrAPI: POST /api/channels/streams/ (Create Streams)
-        App->>DispatcharrAPI: POST /api/channels/channels/ (Create Channel with Stream IDs)
+        App->>DispatcharrAPI: POST /api/channels/logos/ (Create Logo if needed)
+        App->>DispatcharrAPI: POST /api/channels/channels/ (Create Channel with metadata)
+        App->>DispatcharrAPI: PATCH /api/channels/profiles/{id}/channels/{id}/ (Assign to Profile)
     end
     App-->>User: Success Report
 ```
 
-## 5. grouping Strategies Draft
+## 6. grouping Strategies Draft
 
 1.  **Strict ID Match**:
     - Key: `tvg-id`
@@ -79,8 +97,19 @@ sequenceDiagram
     - Normalization: Remove tags like `[FHD]`, `(HD)`, `|ES|`, `50FPS`.
     - Action: If `normalize(A) == normalize(B)`, merge.
 
-## 6. Implementation Questions to Resolve
-- **API Capability**: Can we directly create a Channel with multiple streams in one POST, or do we need to create Streams individually first?
-  - *Swagger check*: `/api/channels/channels/` POST takes `streams: integer[]`. So we must create Streams first, get their IDs, then create the Channel.
-- **Duplicates**: How to handle re-runs? (If I run this tool twice, avoid creating duplicate channels?)
+## 7. Implementation Notes
+
+### API Flow
+- **Streams First**: `/api/channels/channels/` POST accepts `streams: integer[]`, so streams must be created before the channel.
+- **Channel Groups**: Channel groups are created/retrieved by name. Channels are assigned to groups via `channel_group_id`.
+- **Channel Profiles**: Separate from channel groups. Profiles define which channels are available to specific users/devices.
+- **Metadata Requirements**: For proper Dispatcharr functionality with stream codes, channels must include:
+  - `tvg_id` - EPG identifier from M3U
+  - `logo_id` - Reference to created logo
+  - `channel_group_id` - Reference to channel group
+
+### Duplicate Handling
+Currently, the tool does not check for existing channels. Re-running the sync will create duplicate channels. Future enhancement could include:
+- Checking for existing channels by name or tvg-id
+- Updating existing channels instead of creating duplicates
 ```
