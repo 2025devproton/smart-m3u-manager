@@ -2,17 +2,17 @@ name: Docker Build and Push
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "develop" ]
     # Publish semver tags as releases.
     tags: [ 'v*.*.*' ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "develop" ]
 
 env:
   # Use docker.io for Docker Hub if empty
   REGISTRY: docker.io
-  # github.repository as <account>/<repo>
-  IMAGE_NAME: ${{ github.repository }}
+  # Docker Hub repository
+  IMAGE_NAME: 2025dev/smart-m3u-manager
 
 
 jobs:
@@ -30,7 +30,7 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
         with:
-            platforms: linux/amd64,linux/386,linux/arm64/v8,linux/arm/v7
+            platforms: linux/amd64,linux/arm64/v8
 
       # Set up Buildx
       - name: Set up Docker Buildx
@@ -66,6 +66,6 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          platforms: linux/amd64,linux/386,linux/arm64/v8,linux/arm/v7
+          platforms: linux/amd64,linux/arm64/v8
           cache-from: type=gha
           cache-to: type=gha,mode=max
