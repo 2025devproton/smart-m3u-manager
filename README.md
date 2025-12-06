@@ -6,8 +6,8 @@
 ![Last Commit](https://img.shields.io/github/last-commit/2025devproton/smart-m3u-manager?style=flat-square)
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/2025devproton/smart-m3u-manager/docker-publish.yml?branch=main&label=Build%20%26%20Publish&style=flat-square)
 
-[![Docker Pulls](https://img.shields.io/docker/pulls/2025devproton/smart-m3u-manager.svg?style=flat-square)](https://hub.docker.com/r/2025devproton/smart-m3u-manager)
-[![Docker Image Size](https://img.shields.io/docker/image-size/2025devproton/smart-m3u-manager/latest.svg?style=flat-square)](https://hub.docker.com/r/2025devproton/smart-m3u-manager)
+[![Docker Pulls](https://img.shields.io/docker/pulls/2025dev/smart-m3u-manager.svg?style=flat-square)](https://hub.docker.com/r/2025dev/smart-m3u-manager)
+[![Docker Image Size](https://img.shields.io/docker/image-size/2025dev/smart-m3u-manager/latest.svg?style=flat-square)](https://hub.docker.com/r/2025dev/smart-m3u-manager)
 ![Issues](https://img.shields.io/github/issues/2025devproton/smart-m3u-manager?style=flat-square)
 ![Pull Requests](https://img.shields.io/github/issues-pr/2025devproton/smart-m3u-manager?style=flat-square)
 
