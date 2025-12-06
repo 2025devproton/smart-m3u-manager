@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  app:
+    container_name: smart-m3u-manager
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "${PORT:-7000}:${PORT:-7000}"
+    environment:
+      - NODE_ENV=production
+      - PORT=${PORT:-7000}
+      - DISPATCHARR_URL=${DISPATCHARR_URL:-http://localhost:9191}
+      - DISPATCHARR_USER=${DISPATCHARR_USER}
+      - DISPATCHARR_PASSWORD=${DISPATCHARR_PASSWORD}
