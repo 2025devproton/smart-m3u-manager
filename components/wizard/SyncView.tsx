@@ -76,9 +76,10 @@ export default function SyncView() {
                             connection.token,
                             channel.name,
                             streamIds,
-                            targetProfileId, // This is profileId
+                            targetProfileId,
                             channel.tvgId,
-                            channel.logo
+                            channel.logo,
+                            channel.group // Pass the channel group from M3U
                         );
                     } catch (err) {
                         console.error("Channel creation failed", err);
