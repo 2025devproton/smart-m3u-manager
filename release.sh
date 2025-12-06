@@ -93,8 +93,7 @@ log_info "📦 Creando release en GitHub..."
 if command -v gh &> /dev/null; then
     gh release create "v$VERSION" \
         --title "v$VERSION" \
-        --notes "$RELEASE_MESSAGE" \
-        --latest
+        --notes "$RELEASE_MESSAGE"
     log_success "Release v$VERSION creada en GitHub"
 else
     log_warning "GitHub CLI (gh) no está instalado. Debes crear la release manualmente en GitHub."
