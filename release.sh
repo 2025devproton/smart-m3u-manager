@@ -91,10 +91,40 @@ git push origin "v$VERSION"
 # 10. Crear release en GitHub
 log_info "📦 Creando release en GitHub..."
 if command -v gh &> /dev/null; then
+    # Crear notas de release con enlaces a Docker Hub
+    RELEASE_NOTES="## 🐳 Docker Images
+
+Pull the latest version from Docker Hub:
+
+\`\`\`bash
+docker pull 2025dev/smart-m3u-manager:$VERSION
+docker pull 2025dev/smart-m3u-manager:latest
+\`\`\`
+
+### Available Tags
+- [\`$VERSION\`](https://hub.docker.com/r/2025dev/smart-m3u-manager/tags?name=$VERSION)
+- [\`latest\`](https://hub.docker.com/r/2025dev/smart-m3u-manager/tags?name=latest)
+
+### Quick Start
+\`\`\`bash
+docker run -d -p 7000:7000 2025dev/smart-m3u-manager:$VERSION
+\`\`\`
+
+---
+
+$RELEASE_MESSAGE"
+
     gh release create "v$VERSION" \
         --title "v$VERSION" \
-        --notes "$RELEASE_MESSAGE"
+        --notes "$RELEASE_NOTES"
+    
     log_success "Release v$VERSION creada en GitHub"
+    
+    # Nota: GitHub genera automáticamente archivos .zip y .tar.gz con el código fuente
+    # No es posible deshabilitarlos desde gh CLI, pero puedes eliminarlos manualmente desde:
+    # https://github.com/$(git config --get remote.origin.url | sed 's/.*github.com[:/]\(.*\)\.git/\1/')/releases/tag/v$VERSION
+    log_info "💡 Nota: GitHub genera automáticamente archivos de código fuente (.zip/.tar.gz)"
+    log_info "   Puedes eliminarlos manualmente desde la página de la release si lo deseas."
 else
     log_warning "GitHub CLI (gh) no está instalado. Debes crear la release manualmente en GitHub."
 fi
