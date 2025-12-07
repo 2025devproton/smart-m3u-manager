@@ -18,6 +18,7 @@ export default function SyncView() {
     const [newProfileName, setNewProfileName] = useState('');
     const [isCreating, setIsCreating] = useState(false);
     const [syncProgress, setSyncProgress] = useState({ current: 0, total: 0 });
+    const [isMatchingEPG, setIsMatchingEPG] = useState(false);
 
     const selectedChannels = smartChannels.filter(c => c.selected);
 
@@ -53,6 +54,9 @@ export default function SyncView() {
         setIsCreating(true);
         setSyncProgress({ current: 0, total: selectedChannels.length });
 
+        // Local array to track created channel IDs
+        const channelIds: number[] = [];
+
         try {
             for (let i = 0; i < selectedChannels.length; i++) {
                 const channel = selectedChannels[i];
@@ -71,7 +75,7 @@ export default function SyncView() {
                 // 2. Create Channel and assign to Profile
                 if (streamIds.length > 0) {
                     try {
-                        await dispatcharrApi.createChannel(
+                        const channelData = await dispatcharrApi.createChannel(
                             connection.url,
                             connection.token,
                             channel.name,
@@ -81,12 +85,33 @@ export default function SyncView() {
                             channel.logo,
                             channel.group // Pass the channel group from M3U
                         );
+                        // Store channel ID for EPG matching
+                        channelIds.push(channelData.id);
                     } catch (err) {
                         console.error("Channel creation failed", err);
                     }
                 }
 
                 setSyncProgress(prev => ({ ...prev, current: i + 1 }));
+            }
+
+            // Match channels with EPG data after all channels are created
+            if (channelIds.length > 0) {
+                setIsMatchingEPG(true);
+                toast.info('Matching channels with EPG data...');
+                try {
+                    await dispatcharrApi.matchEPG(
+                        connection.url,
+                        connection.token,
+                        channelIds
+                    );
+                    toast.success(`EPG matching initiated for ${channelIds.length} channels`);
+                } catch (e) {
+                    toast.warning('EPG matching failed, but channels were created successfully');
+                    console.error('EPG matching error:', e);
+                } finally {
+                    setIsMatchingEPG(false);
+                }
             }
 
             setStep('success');
@@ -154,6 +179,15 @@ export default function SyncView() {
                             </div>
                             <div className="h-2 bg-secondary rounded-full overflow-hidden">
                                 <div className="h-full bg-primary transition-all" style={{ width: `${(syncProgress.current / syncProgress.total) * 100}%` }} />
+                            </div>
+                        </div>
+                    )}
+
+                    {isMatchingEPG && (
+                        <div className="space-y-2">
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                                <span>Matching channels with EPG data...</span>
                             </div>
                         </div>
                     )}
