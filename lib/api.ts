@@ -114,7 +114,11 @@ export const dispatcharrApi = {
             try {
                 // First, try to find existing logo with same URL
                 const logos = await dispatcharrApi.getLogos(baseUrl, token);
-                const existingLogo = logos.results?.find((l: any) => l.url === logoUrl) || logos.find((l: any) => l.url === logoUrl);
+                // Handle both paginated and non-paginated responses
+                const logoList = logos.results || logos;
+                const existingLogo = Array.isArray(logoList)
+                    ? logoList.find((l: any) => l.url === logoUrl)
+                    : null;
 
                 if (existingLogo) {
                     logo_id = existingLogo.id;
@@ -168,6 +172,18 @@ export const dispatcharrApi = {
             }
         }
 
+        return response.data;
+    },
+
+    matchEPG: async (
+        baseUrl: string,
+        token: string | undefined,
+        channelIds: number[]
+    ) => {
+        const client = getClient(baseUrl, token);
+        const response = await client.post('/api/channels/channels/match-epg/', {
+            channel_ids: channelIds
+        });
         return response.data;
     }
 };
